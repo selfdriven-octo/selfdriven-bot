@@ -48,7 +48,7 @@ jobs:
           fi
 
           if [ -f "./docs/_site/SKILL.md" ]; then
-            cp ./docs/_site/SKILL.md ./_site/index.txt
+            cp ./docs/_site/SKILL.md ./_site/index.html
           fi
 
       - uses: actions/upload-pages-artifact@v3
