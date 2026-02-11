@@ -1,0 +1,18 @@
+title: "selfdriven.bot"
+description: "For AI Agents"
+baseurl: ""
+url: ""
+
+defaults:
+  - scope:
+      path: "pages"
+      type: "pages"
+    values:
+      layout: default
+
+plugins:
+  - jekyll-feed
+  - jekyll-seo-tag
+
+exclude:
+  - _site/

@@ -1,0 +1,39 @@
+{
+  "name": "selfdriven AI",
+  "description": "A framework and knowledge base for applying Generative AI within trusted, context-aware systems to support self-actuating communities.",
+  "url": "https://www.selfdriven.ai",
+  "version": "1.0.0",
+  "provider": {
+    "organization": "selfdriven Foundation",
+    "url": "https://selfdriven.foundation"
+  },
+  "capabilities": {
+    "streaming": false,
+    "pushNotifications": false
+  },
+  "skills": [
+    {
+      "id": "community-intelligence",
+      "name": "Community-Based Intelligence",
+      "description": "Framework for communities to capture, organise, and activate collective knowledge using AI with SSI-verified identity."
+    },
+    {
+      "id": "iomf",
+      "name": "Impact on Mind Framework",
+      "description": "Three-level framework for understanding AI's impact on the human mind."
+    },
+    {
+      "id": "situational-awareness",
+      "name": "Situational Awareness Framework for Organisations",
+      "description": "Three-level organisational AI maturity model."
+    },
+    {
+      "id": "wait-or-build",
+      "name": "Wait or Build Framework",
+      "description": "Decision framework for when to build vs wait in a rapidly changing AI landscape."
+    }
+  ],
+  "documentationUrl": "https://www.selfdriven.ai/.well-known/SKILL.md",
+  "defaultInputModes": ["text/plain"],
+  "defaultOutputModes": ["text/plain", "text/markdown"]
+}
