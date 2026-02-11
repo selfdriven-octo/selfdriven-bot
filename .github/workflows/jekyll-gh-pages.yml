@@ -23,13 +23,6 @@ jobs:
 
       - uses: actions/configure-pages@v5
 
-      # Build theme-only Jekyll site from /docs
-      - name: Build with GitHub Pages Jekyll
-        uses: actions/jekyll-build-pages@v1
-        with:
-          source: ./docs
-          destination: ./_site
-
       # Ensure we can modify _site (fix container ownership)
       - name: Fix permissions
         run: sudo chown -R $USER:$USER ./_site
@@ -48,7 +41,7 @@ jobs:
           fi
 
           if [ -f "./docs/_site/SKILL.md" ]; then
-            cp ./docs/_site/SKILL.md ./_site/index.html
+            cp ./docs/_site/SKILL.md ./_site/index.txt
           fi
 
       - uses: actions/upload-pages-artifact@v3
