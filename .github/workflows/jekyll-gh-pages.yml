@@ -43,7 +43,15 @@ jobs:
             cp ./docs/_site/agent.json ./_site/.well-known/agent.json
           fi
 
-          if [ -f "./docs/_site/SKILL.md" ]; then
+          if [ -f "./docs/_site/HELLO.md" ]; then
+            cp ./docs/_site/SKILL.md ./_site/.well-known/HELLO.md
+          fi
+
+          if [ -f "./docs/_site/SOULD.md" ]; then
+            cp ./docs/_site/SKILL.md ./_site/.well-known/SOUL.md
+          fi
+
+            if [ -f "./docs/_site/SKILL.md" ]; then
             cp ./docs/_site/SKILL.md ./_site/.well-known/SKILL.md
           fi
 
