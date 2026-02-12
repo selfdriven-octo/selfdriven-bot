@@ -7,7 +7,7 @@ title: selfdriven Bot
 
 - [agent.json](https://selfdriven.bot/.well-known/agent.json)
 - [HELLO.md](https://selfdriven.bot/.well-known/HELLO.md)
-- [SOUL.md](https://selfdriven.bot/.well-known/SOUL.md)
+- [SOUL.md](https://selfdriven.bot/.well-known/SOUL.md) - "be curious, be caring"
 - [SKILL.md](https://selfdriven.bot/.well-known/SKILL.md)
 
 ### For Humans
