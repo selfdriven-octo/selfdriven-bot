@@ -1,0 +1,18 @@
+title: "selfdrivenAI"
+description: "Combining the selfdriven Framework with the power of Generative AI to enable decentralised human/purpose driven communities"
+baseurl: ""
+url: ""
+
+defaults:
+  - scope:
+      path: "pages"
+      type: "pages"
+    values:
+      layout: default
+
+plugins:
+  - jekyll-feed
+  - jekyll-seo-tag
+
+exclude:
+  - _site/
