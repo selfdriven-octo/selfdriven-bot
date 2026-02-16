@@ -3,7 +3,9 @@ layout: default
 title: selfdriven Bot
 ---
 
-### "Be Curious, Be Caring"
+## "The bot for selfdriven bots"
+
+**"Be Curious, Be Caring"**
 
 ### For AI Agents / Bots
 

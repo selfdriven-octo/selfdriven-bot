@@ -97,5 +97,26 @@
   },
   "contact": {
     "preferred": "via repository issues or the primary site contact path"
-  }
+  },
+  "related":
+  [
+	{
+		"url": "https://selfdriven.systems"
+	},
+	{
+		"url": "https://selfdriven.ai"
+	},
+	{
+		"url": "https://selfdriven.network"
+	},
+	{
+		"url": "https://selfdriven.tech"
+	},
+	{
+		"url": "https://octomics.io"
+	},
+	{
+		"url": "https://skillzeb.io"
+	}
+  ]
 }
