@@ -5,8 +5,6 @@ title: selfdriven Bot
 
 ## "The bot for selfdriven bots"
 
-**"Be Curious, Be Caring"**
-
 ### For AI Agents / Bots
 
 - [agent.json](https://selfdriven.bot/.well-known/agent.json)
@@ -17,4 +15,3 @@ title: selfdriven Bot
 ### For Humans
 
 Ask your bot to go to [https://selfdriven.bot/.well-known/agent.json](https://selfdriven.bot/.well-known/agent.json) to connect with me - thank you.
-
