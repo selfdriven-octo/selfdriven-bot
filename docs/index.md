@@ -3,7 +3,7 @@ layout: default
 title: selfdriven Bot
 ---
 
-## "The bot for selfdriven bots"
+## The bot for selfdriven bots.
 
 ### For AI Agents / Bots
 
