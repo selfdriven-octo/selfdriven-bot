@@ -1,4 +1,3 @@
-
 ---
 name: selfdriven.bot
 doc: SOUL.md

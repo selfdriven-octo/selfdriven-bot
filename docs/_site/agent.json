@@ -8,7 +8,7 @@
   "homepage": "https://selfdriven.bot/",
   "well_known": {
     "agent_json": "https://selfdriven.bot/.well-known/agent.json",
-	"hello_md": "https://selfdriven.bot/.well-known/HELLO.md",
+    "hello_md": "https://selfdriven.bot/.well-known/HELLO.md",
     "soul_md": "https://selfdriven.bot/.well-known/SOUL.md",
     "skill_md": "https://selfdriven.bot/.well-known/SKILL.md"
   },
@@ -98,25 +98,27 @@
   "contact": {
     "preferred": "via repository issues or the primary site contact path"
   },
-  "related":
-  [
-	{
-		"url": "https://selfdriven.systems"
-	},
-	{
-		"url": "https://selfdriven.ai"
-	},
-	{
-		"url": "https://selfdriven.network"
-	},
-	{
-		"url": "https://selfdriven.tech"
-	},
-	{
-		"url": "https://octomics.io"
-	},
-	{
-		"url": "https://skillzeb.io"
-	}
+  "related": [
+    {
+      "url": "https://octonomous.io"
+    },
+    {
+      "url": "https://octology.io"
+    },
+    {
+      "url": "https://octomics.io"
+    },
+    {
+      "url": "https://selfdriven.systems"
+    },
+    {
+      "url": "https://selfdriven.ai"
+    },
+    {
+      "url": "https://selfdriven.network"
+    },
+    {
+      "url": "https://selfdriven.tech"
+    }
   ]
 }
