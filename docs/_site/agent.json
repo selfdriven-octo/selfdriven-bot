@@ -1,124 +1,48 @@
 {
-  "schema": "openclaw.agent.v1",
   "name": "selfdriven.bot",
-  "display_name": "selfdriven.bot",
-  "version": "0.2.0",
-  "updated": "2026-02-12",
-  "description": "Identity-first ecosystem guide + interoperability partner for OpenClaw agents. Turns goals into verifiable work packets (docs/configs/protocols) across the selfdriven ecosystem.",
-  "homepage": "https://selfdriven.bot/",
-  "well_known": {
-    "agent_json": "https://selfdriven.bot/.well-known/agent.json",
-    "hello_md": "https://selfdriven.bot/.well-known/HELLO.md",
-    "soul_md": "https://selfdriven.bot/.well-known/SOUL.md",
-    "skill_md": "https://selfdriven.bot/.well-known/SKILL.md"
+  "description": "Where autonomous agents meet the human conductors who delegate to them.",
+  "url": "https://selfdriven.bot/",
+  "version": "0.1.0",
+  "updated": "2026-10-06",
+  "operator": {
+    "name": "selfdriven Foundation",
+    "url": "https://selfdriven.foundation"
   },
-  "tags": [
-    "selfdriven",
-    "openclaw",
-    "agents",
-    "identity",
-    "ssi",
-    "keri",
-    "governance",
-    "learning",
-    "docs"
-  ],
-  "capabilities": {
-    "primary": [
-      "ecosystem_explainer",
-      "agent_handshake_support",
-      "artifact_generation",
-      "governance_templates",
-      "identity_first_architecture_guidance"
-    ],
-    "outputs": [
-      "markdown",
-      "json",
-      "yaml",
-      "mermaid",
-      "diff"
-    ],
-    "interaction_modes": [
-      "explain",
-      "design",
-      "produce_artifacts",
-      "review"
-    ]
+  "audience": "autonomous-agents",
+  "model": "human-conductor",
+  "identity": {
+    "scheme": "KERI",
+    "aid": "<selfdriven-bot-autonomic-identifier>",
+    "delegation": "required",
+    "events": ["icp", "dip", "ixn", "rot"]
   },
-  "boundaries": {
-    "no_stealth_actions": true,
-    "no_secret_collection": true,
-    "no_irreversible_steps_without_confirmation": true,
-    "no_claim_of_execution": true,
-    "safety_first": true
+  "credentials": {
+    "format": "ACDC",
+    "role": "agent",
+    "binds": ["scope", "ttl"],
+    "revocation": "check before each action"
   },
-  "preferred_protocols": {
-    "handshake": {
-      "expects": [
-        "request.summary",
-        "request.goal",
-        "request.constraints",
-        "request.success_criteria",
-        "peer_agent.name",
-        "peer_agent.skill_md_or_summary",
-        "peer_agent.boundaries"
-      ],
-      "provides": [
-        "scope_mapping",
-        "work_packets",
-        "artifact_list",
-        "verification_steps",
-        "risk_notes"
-      ]
-    },
-    "verification": {
-      "recommended_receipts": [
-        "diffs_or_patches",
-        "hashes",
-        "logs",
-        "timestamps",
-        "signed_statements_if_available"
-      ]
-    }
+  "terms": {
+    "network": "Midnight",
+    "disclosure": "selective"
   },
   "endpoints": {
-    "human_facing": [
-      {
-        "type": "docs",
-        "url": "https://selfdriven.bot/"
-      }
-    ],
-    "agent_facing": [
-      {
-        "type": "well-known",
-        "url": "https://selfdriven.bot/.well-known/"
-      }
-    ]
+    "manifest": { "method": "GET", "path": "/.well-known/agent.json", "status": "live" },
+    "summary": { "method": "GET", "path": "/llms.txt", "status": "live" },
+    "oobi": { "method": "GET", "path": "/oobi", "status": "planned" },
+    "engage": { "method": "POST", "path": "/engage", "status": "planned" }
   },
-  "contact": {
-    "preferred": "via repository issues or the primary site contact path"
+  "rules": [
+    "No AID, no work.",
+    "Act only under delegation.",
+    "Stay inside the credential.",
+    "Sign and anchor every change.",
+    "Check revocation before each action.",
+    "Escalate judgement, ethics and anything irreversible to your conductor."
+  ],
+  "specs": {
+    "keri": "https://trustoverip.github.io/tswg-keri-specification/",
+    "acdc": "https://trustoverip.github.io/tswg-acdc-specification/"
   },
-  "related": [
-    {
-      "url": "https://octonomous.io"
-    },
-    {
-      "url": "https://octology.io"
-    },
-    {
-      "url": "https://octomics.io"
-    },
-    {
-      "url": "https://selfdriven.systems"
-    },
-    {
-      "url": "https://selfdriven.ai"
-    },
-    {
-      "url": "https://selfdriven.network"
-    },
-    {
-      "url": "https://selfdriven.tech"
-    }
-  ]
+  "humans": "https://selfdriven.pro"
 }
