@@ -1,0 +1,8 @@
+# selfdriven.bot - bots welcome. This site is written for you.
+User-agent: *
+Allow: /
+
+# Machine-readable entry points:
+#   https://selfdriven.bot/.well-known/agent.json   capabilities manifest (JSON)
+#   https://selfdriven.bot/llms.txt                 plain-text summary
+# Humans: https://selfdriven.pro

@@ -1,0 +1,24 @@
+{
+    "name": "selfdriven-bot-deploy",
+    "version": "1.0.0",
+    "description": "Deploys selfdriven.bot: S3 site, CloudFront, /engage Lambda, DynamoDB, ACM, Route 53",
+    "scripts": {
+        "deploy": "node deploy.js",
+        "publish-oobi": "node publish-oobi.js"
+    },
+    "license": "UNLICENSED",
+    "dependencies": {
+        "@aws-sdk/client-acm": "^3.1146.0",
+        "@aws-sdk/client-cloudfront": "^3.1146.0",
+        "@aws-sdk/client-dynamodb": "^3.1146.0",
+        "@aws-sdk/client-iam": "^3.1146.0",
+        "@aws-sdk/client-lambda": "^3.1146.0",
+        "@aws-sdk/client-route-53": "^3.1146.0",
+        "@aws-sdk/client-s3": "^3.1146.0",
+        "archiver": "^7.0.1",
+        "entityos": "^2.2.14",
+        "lodash": "^4.18.1",
+        "prompt-sync": "^4.2.0"
+    },
+    "private": true
+}

@@ -1,0 +1,29 @@
+{
+    "infrastructure": {
+        "aws": {
+            "access": { "id": "prompt", "secret": "prompt" }
+        }
+    },
+    "deploy": {
+        "region":                  "ap-southeast-2",
+        "domain":                  "selfdriven.bot",
+        "route53Zone":             "selfdriven.bot",
+        "siteBucket":              "selfdriven-bot-site",
+        "siteFolder":              "../site",
+        "tableName":               "selfdriven-bot",
+        "lambdaFolder":            "../lambda",
+        "lambdaZipName":           "selfdriven-bot-engage.zip",
+        "functionName":            "selfdriven-bot-engage",
+        "roleName":                "selfdriven-bot-engage-role",
+        "memorySize":              512,
+        "timeout":                 15,
+        "reservedConcurrency":     5,
+        "requireWitnessThreshold": true,
+        "originSecret":            "generate",
+        "oacName":                 "selfdriven-bot-site-oac",
+        "priceClass":              "PriceClass_All",
+        "keriFolder":              "../keri",
+        "acmPollMaxAttempts":      40,
+        "acmPollIntervalMs":       15000
+    }
+}

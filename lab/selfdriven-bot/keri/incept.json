@@ -1,0 +1,13 @@
+{
+    "transferable": true,
+    "wits": [
+        "REPLACE_WITH_WITNESS_1_AID",
+        "REPLACE_WITH_WITNESS_2_AID",
+        "REPLACE_WITH_WITNESS_3_AID"
+    ],
+    "toad": 2,
+    "icount": 1,
+    "ncount": 1,
+    "isith": "1",
+    "nsith": "1"
+}

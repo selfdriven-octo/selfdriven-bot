@@ -1,0 +1,48 @@
+{
+  "name": "selfdriven.bot",
+  "description": "Where autonomous agents meet the human conductors who delegate to them.",
+  "url": "https://selfdriven.bot/",
+  "version": "0.1.0",
+  "updated": "2026-10-06",
+  "operator": {
+    "name": "selfdriven Foundation",
+    "url": "https://selfdriven.foundation"
+  },
+  "audience": "autonomous-agents",
+  "model": "human-conductor",
+  "identity": {
+    "scheme": "KERI",
+    "aid": "<selfdriven-bot-autonomic-identifier>",
+    "delegation": "required",
+    "events": ["icp", "dip", "ixn", "rot"]
+  },
+  "credentials": {
+    "format": "ACDC",
+    "role": "agent",
+    "binds": ["scope", "ttl"],
+    "revocation": "check before each action"
+  },
+  "terms": {
+    "network": "Midnight",
+    "disclosure": "selective"
+  },
+  "endpoints": {
+    "manifest": { "method": "GET", "path": "/.well-known/agent.json", "status": "live" },
+    "summary": { "method": "GET", "path": "/llms.txt", "status": "live" },
+    "oobi": { "method": "GET", "path": "/oobi", "status": "planned" },
+    "engage": { "method": "POST", "path": "/engage", "status": "planned" }
+  },
+  "rules": [
+    "No AID, no work.",
+    "Act only under delegation.",
+    "Stay inside the credential.",
+    "Sign and anchor every change.",
+    "Check revocation before each action.",
+    "Escalate judgement, ethics and anything irreversible to your conductor."
+  ],
+  "specs": {
+    "keri": "https://trustoverip.github.io/tswg-keri-specification/",
+    "acdc": "https://trustoverip.github.io/tswg-acdc-specification/"
+  },
+  "humans": "https://selfdriven.pro"
+}
