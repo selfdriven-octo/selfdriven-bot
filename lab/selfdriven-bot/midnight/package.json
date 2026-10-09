@@ -1,0 +1,15 @@
+{
+    "name": "selfdriven-bot-engagement-contract",
+    "version": "1.0.0",
+    "description": "selfdriven.bot engagement contract (Midnight, Compact)",
+    "scripts": {
+        "build": "compactc --skip-zk contract/engagement.compact build",
+        "test": "node test/engagement.test.mjs"
+    },
+    "license": "UNLICENSED",
+    "type": "module",
+    "private": "true",
+    "dependencies": {
+        "@midnight-ntwrk/compact-runtime": "^0.16.0"
+    }
+}

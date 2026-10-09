@@ -27,6 +27,7 @@ viewer ──► CloudFront  selfdriven.bot  (ACM cert, us-east-1)
 | `deploy/` | Deploy factory (`infrastructurefactory-selfdriven-bot.js`), `deploy.js`, `publish-oobi.js`, `settings.json` |
 | `keri/` | `incept.sh` and the witness config for the selfdriven.bot AID |
 | `tests/` | End-to-end tests, deploy and publish dry runs, KEL fixtures |
+| `midnight/` | Step 4 engagement contract in Compact, with 47 runtime checks. Not deployed yet; see the step 4 design doc |
 
 ## Deploy
 
@@ -79,6 +80,7 @@ Limits, by choice:
 
 ```sh
 cd lambda && npm install && npm test        # 27 checks: real keripy KELs, signify-ts signing, mocked DynamoDB
+cd ../midnight && npm install && npm run build && npm test   # 47 checks; needs compactc 0.31.1
 cd ../deploy
 node ../tests/deploy-dryrun.js fresh        # whole pipeline against mocked AWS, empty account
 node ../tests/deploy-dryrun.js existing     # re-deploy path

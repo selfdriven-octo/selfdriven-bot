@@ -1,0 +1,254 @@
+// selfdriven.bot engagement registry (protocol step 4)
+//
+// One entry per engagement. The ledger holds a commitment to the terms, a
+// per-engagement key for each party and the agreement's phase. Terms never
+// reach the ledger: parties supply them as private witnesses and prove facts
+// about them in zero knowledge.
+//
+// Payments are made off Midnight and attested here ("attested payments").
+// Escrow inside the contract waits on Midnight; it will ship as a new contract.
+
+pragma language_version >= 0.23;
+
+import CompactStandardLibrary;
+
+export enum Phase { offered, accepted, completed, closed, withdrawn, revoked, resigned }
+
+export enum ClaimKind { amountAtMost, endsBy }
+
+// Fixed-width view of the offer. The full offer JSON is bound through offerSaid.
+export struct Terms {
+  offerSaid: Bytes<32>;     // raw Blake3-256 digest of the SAIDified offer JSON
+  conductorPk: Bytes<32>;   // conductor's key for this engagement (partyKey)
+  agentKey: Bytes<32>;      // the agent's acceptance key from its listing (acceptanceKey)
+  amount: Uint<64>;         // total, in minor units of currency
+  currency: Bytes<8>;       // ISO 4217 code or token ticker, zero padded
+  milestones: Uint<8>;      // number of payments
+  start: Uint<64>;          // unix seconds
+  end: Uint<64>;            // unix seconds
+  acceptBy: Uint<64>;       // unix seconds; the offer lapses after this
+}
+
+export struct Engagement {
+  termsCommit: Bytes<32>;
+  conductorPk: Bytes<32>;
+  agentPk: Bytes<32>;
+  phase: Phase;
+  paid: Uint<8>;            // milestones the conductor says it has paid
+  received: Uint<8>;        // milestones the agent has confirmed
+}
+
+// A fact about one engagement's terms, proven without revealing them.
+export struct Claim {
+  engagement: Bytes<32>;
+  attester: Bytes<32>;      // the attesting party's key for this engagement
+  kind: ClaimKind;
+  bound: Uint<64>;
+}
+
+// After `end` plus this grace period, a fully paid engagement can be closed
+// by the conductor even if the agent never confirms the last payment.
+export pure circuit closeGrace(): Uint<64> {
+  return 1209600;           // 14 days, in seconds
+}
+
+export ledger engagements: Map<Bytes<32>, Engagement>;
+export ledger claims: Set<Claim>;
+
+// Private inputs, supplied by the caller's own wallet and proof server.
+witness secretKey(): Bytes<32>;   // the caller's secret, derived off-chain from its wallet seed
+witness offerTerms(): Terms;
+witness offerSalt(): Bytes<32>;
+
+// A party's public key for one engagement. Unlinkable across engagements.
+export pure circuit partyKey(id: Bytes<32>, sk: Bytes<32>): Bytes<32> {
+  return persistentHash<Vector<3, Bytes<32>>>([pad(32, "sdbot:engagement:pk:v1"), id, sk]);
+}
+
+// The key an agent publishes with its listing. Only its holder can accept an
+// offer that names it. It never appears on the ledger, only inside commitments.
+export pure circuit acceptanceKey(sk: Bytes<32>): Bytes<32> {
+  return persistentHash<Vector<2, Bytes<32>>>([pad(32, "sdbot:agent:accept:v1"), sk]);
+}
+
+export pure circuit commitTerms(terms: Terms, salt: Bytes<32>): Bytes<32> {
+  return persistentCommit<Terms>(terms, salt);
+}
+
+circuit callerKey(id: Bytes<32>): Bytes<32> {
+  return partyKey(id, secretKey());
+}
+
+// Loads the private terms and checks them against the engagement's commitment.
+circuit openTerms(e: Engagement): Terms {
+  const t = offerTerms();
+  assert(commitTerms(t, offerSalt()) == e.termsCommit, "terms do not match the commitment");
+  return t;
+}
+
+// Conductor: open an offer. The commitment is computed here, so it always
+// covers well-formed terms that name the caller's key.
+export circuit offer(id: Bytes<32>): [] {
+  const eid = disclose(id);
+  assert(!engagements.member(eid), "engagement id already used");
+
+  const t = offerTerms();
+  const ck = callerKey(eid);
+  assert(t.conductorPk == ck, "terms must name the caller as conductor");
+  assert(t.milestones > 0, "at least one milestone");
+  assert(t.end > t.start, "end must follow start");
+
+  engagements.insert(eid, Engagement {
+    termsCommit: disclose(commitTerms(t, offerSalt())),
+    conductorPk: disclose(ck),
+    agentPk: default<Bytes<32>>,
+    phase: Phase.offered,
+    paid: 0,
+    received: 0
+  });
+}
+
+// Agent: accept by proving it holds the terms behind the commitment and the
+// secret behind the acceptance key the terms name. `validUntil` is chosen by the
+// agent (a little after now): the public learns only that the offer was open
+// until at least then, not the offer's real deadline.
+export circuit accept(id: Bytes<32>, validUntil: Uint<64>): [] {
+  const eid = disclose(id);
+  const e = engagements.lookup(eid);
+  assert(e.phase == Phase.offered, "offer is not open");
+
+  const t = openTerms(e);
+  const sk = secretKey();
+  assert(acceptanceKey(sk) == t.agentKey, "caller is not the agent named in the offer");
+  assert(validUntil <= t.acceptBy, "offer has lapsed");
+  assert(blockTimeLt(disclose(validUntil)), "offer has lapsed");
+
+  engagements.insert(eid, Engagement {
+    termsCommit: e.termsCommit,
+    conductorPk: e.conductorPk,
+    agentPk: disclose(partyKey(eid, sk)),
+    phase: Phase.accepted,
+    paid: e.paid,
+    received: e.received
+  });
+}
+
+// Conductor: withdraw an offer that has not been accepted.
+export circuit withdraw(id: Bytes<32>): [] {
+  const eid = disclose(id);
+  const e = engagements.lookup(eid);
+  assert(e.phase == Phase.offered, "only an open offer can be withdrawn");
+  assert(callerKey(eid) == e.conductorPk, "only the conductor can withdraw");
+  setPhase(eid, e, Phase.withdrawn);
+}
+
+// Conductor: record that the next milestone has been paid off-chain.
+export circuit markPaid(id: Bytes<32>): [] {
+  const eid = disclose(id);
+  const e = engagements.lookup(eid);
+  assert(e.phase == Phase.accepted, "engagement is not active");
+  assert(callerKey(eid) == e.conductorPk, "only the conductor can mark a payment");
+  const t = openTerms(e);
+  assert(e.paid < t.milestones, "every milestone is already paid");
+
+  engagements.insert(eid, Engagement {
+    termsCommit: e.termsCommit,
+    conductorPk: e.conductorPk,
+    agentPk: e.agentPk,
+    phase: e.phase,
+    paid: (e.paid + 1) as Uint<8>,
+    received: e.received
+  });
+}
+
+// Agent: confirm the next paid milestone arrived. The last one completes the engagement.
+export circuit confirmReceived(id: Bytes<32>): [] {
+  const eid = disclose(id);
+  const e = engagements.lookup(eid);
+  assert(e.phase == Phase.accepted, "engagement is not active");
+  assert(callerKey(eid) == e.agentPk, "only the agent can confirm a payment");
+  assert(e.received < e.paid, "no unconfirmed payment");
+  const t = openTerms(e);
+
+  const received = (e.received + 1) as Uint<8>;
+  engagements.insert(eid, Engagement {
+    termsCommit: e.termsCommit,
+    conductorPk: e.conductorPk,
+    agentPk: e.agentPk,
+    phase: disclose(received == t.milestones) ? Phase.completed : Phase.accepted,
+    paid: e.paid,
+    received: received
+  });
+}
+
+// Conductor: close a fully paid engagement the agent never finished confirming.
+// `after` must be at least `end` plus the grace period, and already past.
+export circuit close(id: Bytes<32>, after: Uint<64>): [] {
+  const eid = disclose(id);
+  const e = engagements.lookup(eid);
+  assert(e.phase == Phase.accepted, "engagement is not active");
+  assert(callerKey(eid) == e.conductorPk, "only the conductor can close");
+  const t = openTerms(e);
+  assert(e.paid == t.milestones, "not every milestone is paid");
+  assert(after >= t.end + closeGrace(), "grace period has not ended");
+  assert(blockTimeGte(disclose(after)), "grace period has not ended");
+  setPhase(eid, e, Phase.closed);
+}
+
+// Conductor: end the engagement early. Mirrors revoking the role credential (step 9).
+export circuit revoke(id: Bytes<32>): [] {
+  const eid = disclose(id);
+  const e = engagements.lookup(eid);
+  assert(e.phase == Phase.accepted, "engagement is not active");
+  assert(callerKey(eid) == e.conductorPk, "only the conductor can revoke");
+  setPhase(eid, e, Phase.revoked);
+}
+
+// Agent: step away from an active engagement.
+export circuit resign(id: Bytes<32>): [] {
+  const eid = disclose(id);
+  const e = engagements.lookup(eid);
+  assert(e.phase == Phase.accepted, "engagement is not active");
+  assert(callerKey(eid) == e.agentPk, "only the agent can resign");
+  setPhase(eid, e, Phase.resigned);
+}
+
+// Either party, once accepted: prove the total is at most `cap` without revealing it.
+export circuit attestAmountAtMost(id: Bytes<32>, cap: Uint<64>): [] {
+  const eid = disclose(id);
+  const e = engagements.lookup(eid);
+  const k = requireAgreedParty(eid, e);
+  const t = openTerms(e);
+  assert(t.amount <= cap, "amount exceeds the bound");
+  claims.insert(Claim { engagement: eid, attester: k, kind: ClaimKind.amountAtMost, bound: disclose(cap) });
+}
+
+// Either party, once accepted: prove the engagement ends by `time` without revealing its dates.
+export circuit attestEndsBy(id: Bytes<32>, time: Uint<64>): [] {
+  const eid = disclose(id);
+  const e = engagements.lookup(eid);
+  const k = requireAgreedParty(eid, e);
+  const t = openTerms(e);
+  assert(t.end <= time, "engagement ends later");
+  claims.insert(Claim { engagement: eid, attester: k, kind: ClaimKind.endsBy, bound: disclose(time) });
+}
+
+// Claims only on agreements both sides made: accepted, completed or closed.
+circuit requireAgreedParty(eid: Bytes<32>, e: Engagement): Bytes<32> {
+  assert(e.phase == Phase.accepted || e.phase == Phase.completed || e.phase == Phase.closed,
+         "claims need an accepted engagement");
+  const k = callerKey(eid);
+  assert(k == e.conductorPk || k == e.agentPk, "not a party to this engagement");
+  return disclose(k);
+}
+
+circuit setPhase(eid: Bytes<32>, e: Engagement, phase: Phase): [] {
+  engagements.insert(eid, Engagement {
+    termsCommit: e.termsCommit,
+    conductorPk: e.conductorPk,
+    agentPk: e.agentPk,
+    phase: phase,
+    paid: e.paid,
+    received: e.received
+  });
+}
